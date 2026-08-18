@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.venv/
+env/
+venv/
+
+# Build and Output
+dist/
+build/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Databases & Cache
+*.db
+*.sqlite
+*.sqlite3
+__pycache__/
+.pytest_cache/
+
+# IDE & System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
