@@ -967,6 +967,473 @@ h1 span {
   border-color: var(--primary-blue);
 }
 
+/* ════════════════════════════════════════════════ */
+/* THEMATIC STYLES: AI CYBER LEARNING HUB           */
+/* ════════════════════════════════════════════════ */
+
+.cyber-hub-wrapper {
+  background: radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 45%),
+              radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 45%),
+              #090d16;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 24px;
+  padding: 32px 28px;
+  margin-bottom: 28px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-hub-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4, #ec4899);
+}
+
+.cyber-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #a78bfa;
+  text-transform: uppercase;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.cyber-hub-title {
+  font: 700 30px Outfit, sans-serif;
+  color: #ffffff;
+  margin: 12px 0 6px;
+  letter-spacing: -0.5px;
+}
+
+.cyber-hub-subtitle {
+  color: #94a3b8;
+  font-size: 14px;
+  margin: 0 0 24px;
+  line-height: 1.55;
+  max-width: 650px;
+}
+
+.cyber-search-box {
+  display: flex;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(12px);
+  padding: 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cyber-search-box:focus-within {
+  border-color: #06b6d4;
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+}
+
+.cyber-search-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding: 8px 12px;
+  color: #ffffff;
+  background: transparent;
+}
+
+.cyber-search-box input::placeholder {
+  color: #64748b;
+}
+
+.cyber-search-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cyber-btn-violet {
+  background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.cyber-btn-violet:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.6) !important;
+}
+
+.cyber-btn-cyan {
+  background: rgba(6, 182, 212, 0.15) !important;
+  border: 1px solid rgba(6, 182, 212, 0.4) !important;
+  color: #38bdf8 !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  transition: all 0.15s ease !important;
+}
+
+.cyber-btn-cyan:hover {
+  background: rgba(6, 182, 212, 0.25) !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.3) !important;
+}
+
+.cyber-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.cyber-chip {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cyber-chip:hover {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: #a78bfa;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(167, 139, 250, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Cyber Stats Cards */
+.cyber-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.cyber-stat-card {
+  background: linear-gradient(145deg, #0f172a, #1e1b4b);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.cyber-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(6, 182, 212, 0.5);
+  box-shadow: 0 8px 25px rgba(6, 182, 212, 0.2);
+}
+
+.cyber-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.cyber-icon-violet { background: rgba(139, 92, 246, 0.2); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.4); }
+.cyber-icon-cyan { background: rgba(6, 182, 212, 0.2); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.4); }
+.cyber-icon-emerald { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+.cyber-icon-pink { background: rgba(236, 72, 153, 0.2); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.4); }
+
+.cyber-stat-info b {
+  display: block;
+  font: 700 24px Outfit, sans-serif;
+  color: #ffffff;
+}
+
+.cyber-stat-info span {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Cyber Mission Card */
+.cyber-mission-card {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  border-radius: 20px;
+  padding: 26px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  color: #ffffff;
+}
+
+.cyber-mission-progress {
+  width: 100%;
+  height: 8px;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 16px 0;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cyber-mission-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4, #10b981);
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 900px) {
+  .cyber-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .cyber-search-box {
+    flex-direction: column;
+  }
+  .cyber-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ════════════════════════════════════════════════ */
+/* NEW DASHBOARD STYLES (Coursera & Udemy Inspired) */
+/* ════════════════════════════════════════════════ */
+
+.dashboard-hero-banner {
+  background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #faf5ff 100%);
+  border: 1px solid #dbeafe;
+  border-radius: 20px;
+  padding: 32px 28px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.06);
+}
+
+.dashboard-hero-banner h2 {
+  font: 700 28px Outfit, sans-serif;
+  color: #1e293b;
+  margin: 4px 0 8px;
+}
+
+.dashboard-hero-banner p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0 0 20px;
+  max-width: 650px;
+  line-height: 1.5;
+}
+
+.dashboard-search-box {
+  display: flex;
+  gap: 12px;
+  background: #ffffff;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1.5px solid #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.dashboard-search-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding: 8px 12px;
+  color: #1e293b;
+  background: transparent;
+}
+
+.dashboard-search-box input::placeholder {
+  color: #94a3b8;
+}
+
+.dashboard-search-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.dashboard-search-actions button {
+  white-space: nowrap;
+}
+
+/* Category Skill Chips */
+.skill-chips-section {
+  margin-top: 18px;
+}
+
+.skill-chips-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #64748b;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.skill-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-chip {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.skill-chip:hover {
+  background: #f1f5f9;
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
+  transform: translateY(-1px);
+}
+
+/* Stats Counter Grid */
+.stats-counter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.18s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.stat-icon-blue { background: #eff6ff; color: #2563eb; }
+.stat-icon-green { background: #f0fdf4; color: #16a34a; }
+.stat-icon-purple { background: #faf5ff; color: #9333ea; }
+.stat-icon-orange { background: #fff7ed; color: #ea580c; }
+
+.stat-info b {
+  display: block;
+  font: 700 22px Outfit, sans-serif;
+  color: #0f172a;
+}
+
+.stat-info span {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Continue Learning Banner */
+.continue-learning-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.cl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.cl-badge {
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.cl-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 14px 0;
+}
+
+.cl-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.cl-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+@media (max-width: 900px) {
+  .stats-counter-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboard-search-box {
+    flex-direction: column;
+  }
+  .stats-counter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Difficulty Selector & Active States */
 .difficulty-selector {
   margin-top: 18px;

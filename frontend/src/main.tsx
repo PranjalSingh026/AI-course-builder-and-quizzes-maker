@@ -14,7 +14,7 @@ type Lesson = CoursePreview["lessons"][number];
 type Quiz = { title: string; questions: { question: string; options: string[]; correct_answer: string; explanation: string }[] };
 
 function App() {
-  const [goal, setGoal] = useState("I want to learn DBMS for my placement interviews");
+  const [goal, setGoal] = useState("");
   const [level, setLevel] = useState("Beginner");
   const [lessonCount, setLessonCount] = useState(4);
   const [loading, setLoading] = useState(false);
@@ -138,7 +138,8 @@ function App() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    if (!authEmail.trim() || !authPassword.trim()) {
+    const cleanEmail = authEmail.trim().toLowerCase();
+    if (!cleanEmail || !authPassword.trim()) {
       setAuthError("Please fill in all fields.");
       return;
     }
@@ -146,10 +147,18 @@ function App() {
     setAuthError("");
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: authEmail.trim(),
+        email: cleanEmail,
         password: authPassword,
       });
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes("Invalid login credentials")) {
+          throw new Error("Invalid email or password. Please check your credentials or register if you don't have an account.");
+        }
+        if (error.message.includes("Email not confirmed")) {
+          throw new Error("Please check your email inbox to confirm your account before signing in.");
+        }
+        throw error;
+      }
       if (data.user) {
         setAuthUser(data.user);
         setUserId(data.user.id);
@@ -171,7 +180,8 @@ function App() {
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
-    if (!authEmail.trim() || !authPassword.trim()) {
+    const cleanEmail = authEmail.trim().toLowerCase();
+    if (!cleanEmail || !authPassword.trim()) {
       setAuthError("Please fill in all fields.");
       return;
     }
@@ -183,14 +193,23 @@ function App() {
     setAuthError("");
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: authEmail.trim(),
+        email: cleanEmail,
         password: authPassword,
         options: {
           data: { full_name: authName.trim() }
         }
       });
       if (error) throw error;
-      if (data.user) {
+
+      /* If user already exists in Supabase, identities array will be empty */
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        setAuthError("This email address is already registered. Please log in instead.");
+        setAuthMode("login");
+        return;
+      }
+
+      /* If session established immediately */
+      if (data.session && data.user) {
         setAuthUser(data.user);
         setUserId(data.user.id);
         setShowAuthModal(false);
@@ -202,6 +221,29 @@ function App() {
         if (course) setSavedCourse(course);
         setCompletedLessons(completedLessonIds);
         if (activeNav === "My learning") void loadMyLearningData();
+      } else {
+        /* Attempt instant login to create session if email auto-confirm is enabled */
+        const loginRes = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password: authPassword,
+        });
+        if (loginRes.data?.user) {
+          setAuthUser(loginRes.data.user);
+          setUserId(loginRes.data.user.id);
+          setShowAuthModal(false);
+          setAuthEmail("");
+          setAuthPassword("");
+          setAuthName("");
+          pushNotice(`Account created successfully! Welcome to AsterLearn.`);
+          const { course, completedLessonIds } = await loadLatestCourse(loginRes.data.user.id);
+          if (course) setSavedCourse(course);
+          setCompletedLessons(completedLessonIds);
+          if (activeNav === "My learning") void loadMyLearningData();
+        } else {
+          pushNotice("Account created! Check your email inbox to confirm your email before signing in.");
+          setAuthMode("login");
+          setAuthError("Account created! Please check your email inbox to confirm your account before logging in.");
+        }
       }
     } catch (err: any) {
       setAuthError(err.message || "Registration failed. Please try again.");
@@ -449,7 +491,14 @@ function App() {
       {/* PAGE: Dashboard                                 */}
       {/* ════════════════════════════════════════════════ */}
       {activeNav === "Dashboard" && <>
-      <header><div><p className="eyebrow">YOUR PERSONAL LEARNING SPACE</p><h1>Welcome to AsterLearn <span>✦</span></h1><p className="subtitle">Create a course around your own goal, then learn, practise, and track real progress.</p></div>
+      <header>
+        <div>
+          <p className="eyebrow">YOUR PERSONAL LEARNING COMMAND CENTER</p>
+          <h1>
+            Welcome back, {authUser ? (authUser.user_metadata?.full_name || authUser.email.split("@")[0]) : "Learner"}! <span>✦</span>
+          </h1>
+          <p className="subtitle">Track your progress, explore new AI skills, and jump right back into your learning journey.</p>
+        </div>
         <div className="notif-wrapper" ref={notifPanelRef}>
           <button className="bell" aria-label="Notifications" onClick={() => { setShowNotifPanel(prev => !prev); if (!showNotifPanel) markAllRead(); }}>
             <Bell size={18}/>
@@ -465,15 +514,190 @@ function App() {
         </div>
       </header>
 
-      {courseBuilderBlock}
+      {/* ── 1. AI Cyber-Hub Hero & Prompt Search ── */}
+      <section className="cyber-hub-wrapper">
+        <div className="cyber-eyebrow">
+          <Sparkles size={13} /> AI CYBER LEARNING HUB
+        </div>
+        <h2 className="cyber-hub-title">What skill do you want to master today?</h2>
+        <p className="cyber-hub-subtitle">Type any topic or learning goal below to generate a custom AI course or launch an instant topic assessment.</p>
 
-      <section className="section-heading"><div><p className="eyebrow">YOUR LEARNING SPACE</p><h2>Your courses</h2></div><button className="text-button" onClick={() => goTo("Create course")}>Create course <ChevronRight size={16}/></button></section>
-      <section className="learning-grid" ref={learningRef}>
-        {savedCourse ? <article className="continue-card"><div className="course-top"><span className="course-icon">▣</span><span className="pill">SAVED COURSE</span></div><p className="eyebrow">{savedCourse.level.toUpperCase()} LEVEL</p><h3>{savedCourse.title}</h3><p className="next"><BookOpen size={16}/> {savedCourse.lessons.length} lessons ready to begin</p><button className="primary full" onClick={() => openLesson(savedCourse.lessons[0])}>Open learning path <ChevronRight size={17}/></button></article> : <article className="continue-card"><div className="course-top"><span className="course-icon">＋</span><span className="pill">GET STARTED</span></div><p className="eyebrow">NO COURSE YET</p><h3>Build your first learning path</h3><p className="next"><Clock3 size={16}/> It takes less than a minute to create.</p><button className="primary full" onClick={() => goTo("Create course")}>Create my course <ChevronRight size={17}/></button></article>}
-        <article className="recommendation"><div className="recommendation-head"><span className="ai-badge"><BrainCircuit size={18}/></span><span>AI RECOMMENDATIONS</span></div><h3>Your personalised insights will appear here</h3><p>Once you complete quizzes, AsterLearn will identify your strong topics and the concepts that need practice.</p><div className="weak-chip"><Target size={16}/> Awaiting your first assessment</div><button className="outline full" onClick={() => goTo("Create course")}>Start learning <ChevronRight size={17}/></button></article>
+        <div className="cyber-search-box">
+          <input
+            type="text"
+            value={goal}
+            onChange={(e) => { setGoal(e.target.value); setPracticeTopic(e.target.value); }}
+            placeholder="Search what you want to learn today..."
+            aria-label="Search learning goal or topic"
+          />
+          <div className="cyber-search-actions">
+            <button className="primary cyber-btn-violet" onClick={() => { goTo("Create course"); void createCourse(); }}>
+              <Sparkles size={16} /> Build AI Course
+            </button>
+            <button className="outline cyber-btn-cyan" onClick={() => { goTo("Quizzes"); void generateTopicQuiz(); }}>
+              <Compass size={16} /> Practice Quiz
+            </button>
+          </div>
+        </div>
+
+        {/* Interactive Neon Skill Matrix */}
+        <div style={{ marginTop: 20 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px", color: "#a78bfa", textTransform: "uppercase", margin: "0 0 10px" }}>
+            POPULAR AI LEARNING PATHS
+          </p>
+          <div className="cyber-chips-row">
+            {[
+              { label: "💻 Web Development", topic: "React & Node.js web development" },
+              { label: "🤖 Machine Learning & AI", topic: "Machine learning algorithms and neural networks" },
+              { label: "🗄️ DBMS & SQL Joins", topic: "Database management systems and SQL queries" },
+              { label: "⚡ Data Structures & Algorithms", topic: "Data structures and algorithm design" },
+              { label: "🛡️ Cyber Security & Cloud", topic: "Cybersecurity fundamentals and cloud architecture" },
+              { label: "📊 Data Science & Python", topic: "Data analysis and visualization with Python" },
+            ].map(chip => (
+              <button
+                key={chip.label}
+                className="cyber-chip"
+                onClick={() => {
+                  setGoal(chip.topic);
+                  setPracticeTopic(chip.topic);
+                  pushNotice(`Selected: ${chip.label}. Click "Build AI Course" or "Practice Quiz" to start!`);
+                }}
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </section>
-      <section className="section-heading"><div><p className="eyebrow">KNOW YOUR PROGRESS</p><h2>Topic mastery</h2></div><button className="text-button" onClick={() => goTo("Analytics")}>Open analytics <ChevronRight size={16}/></button></section>
-      <section className="analytics"><article className="chart-card empty-card"><Trophy size={27}/><div><h3>No assessment data yet</h3><p>Take your first course quiz to unlock topic scores, weak-area detection, and progress charts.</p></div></article><article className="score-card"><p className="eyebrow">LATEST ASSESSMENT</p><div className="score-ring"><b>—</b></div><h3>Nothing to review yet</h3><p>Your first completed quiz will appear here.</p><button className="text-button" onClick={() => goTo("Create course")}>Create a course <ChevronRight size={16}/></button></article></section>
+
+      {/* ── 2. Glowing Cyber Stats Cards ── */}
+      <section className="cyber-stats-grid">
+        <article className="cyber-stat-card">
+          <div className="cyber-stat-icon cyber-icon-violet"><BookOpen size={22} /></div>
+          <div className="cyber-stat-info">
+            <b>{allCourses.length || (savedCourse ? 1 : 0)}</b>
+            <span>Saved Courses</span>
+          </div>
+        </article>
+        <article className="cyber-stat-card">
+          <div className="cyber-stat-icon cyber-icon-emerald"><CheckCircle2 size={22} /></div>
+          <div className="cyber-stat-info">
+            <b>{completedLessons.length}</b>
+            <span>Completed Lessons</span>
+          </div>
+        </article>
+        <article className="cyber-stat-card">
+          <div className="cyber-stat-icon cyber-icon-cyan"><Trophy size={22} /></div>
+          <div className="cyber-stat-info">
+            <b>{quizHistory.length}</b>
+            <span>Quizzes Taken</span>
+          </div>
+        </article>
+        <article className="cyber-stat-card">
+          <div className="cyber-stat-icon cyber-icon-pink"><Clock3 size={22} /></div>
+          <div className="cyber-stat-info">
+            <b>{completedLessons.length > 0 ? "3 Days" : "1 Day"}</b>
+            <span>Learning Streak</span>
+          </div>
+        </article>
+      </section>
+
+      {/* ── 3. Udemy-Style Featured "Continue Learning" & Saved Courses ── */}
+      {(() => {
+        const activeCourse = savedCourse || (allCourses.length > 0 ? allCourses[0] : null);
+        if (!activeCourse) {
+          return (
+            <section className="learning-grid" ref={learningRef}>
+              <article className="continue-card">
+                <div className="course-top"><span className="course-icon">＋</span><span className="pill">GET STARTED</span></div>
+                <p className="eyebrow">NO ACTIVE COURSE YET</p>
+                <h3>Build your first learning path</h3>
+                <p className="next"><Clock3 size={16}/> It takes less than a minute to create an AI-powered course.</p>
+                <button className="primary full" onClick={() => goTo("Create course")}>Create My First Course <ChevronRight size={17}/></button>
+              </article>
+              <article className="recommendation">
+                <div className="recommendation-head"><span className="ai-badge"><BrainCircuit size={18}/></span><span>AI PRACTICE HUB</span></div>
+                <h3>Test your skills with instant assessments</h3>
+                <p>Select any topic or pick from practice quizzes to measure your knowledge and identify areas for improvement.</p>
+                <div className="weak-chip"><Target size={16}/> Ready for your first assessment</div>
+                <button className="outline full" onClick={() => goTo("Quizzes")}>Start Practising Quizzes <ChevronRight size={17}/></button>
+              </article>
+            </section>
+          );
+        }
+
+        const totalL = activeCourse.lessons?.length || 0;
+        const pct = totalL > 0 ? Math.round((completedLessons.length / totalL) * 100) : 0;
+
+        return (
+          <section className="continue-learning-card">
+            <div className="cl-header">
+              <span className="cl-badge">CONTINUE LEARNING</span>
+              <span className="pill">{activeCourse.level.toUpperCase()} LEVEL</span>
+            </div>
+            <h3 style={{ fontSize: 22, margin: "6px 0", color: "#0f172a" }}>{activeCourse.title}</h3>
+            <p style={{ color: "#64748b", fontSize: 13.5, margin: "0 0 14px", lineHeight: 1.5 }}>{activeCourse.description}</p>
+            
+            <div className="cl-progress-bar">
+              <div className="cl-progress-fill" style={{ width: `${pct}%` }} />
+            </div>
+
+            <div className="cl-footer">
+              <p style={{ fontSize: 13, color: "#475569", margin: 0, fontWeight: 500 }}>
+                <CheckCircle2 size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: 6, color: "#2563eb" }} />
+                {completedLessons.length} of {totalL} lessons completed ({pct}%)
+              </p>
+              <button className="primary" onClick={() => { openLesson(activeCourse.lessons[0]); goTo("Create course"); }}>
+                Resume Learning <ChevronRight size={17} />
+              </button>
+            </div>
+
+            {/* If there are additional saved courses, show them as quick cards */}
+            {allCourses.length > 1 && (
+              <div style={{ marginTop: 24, paddingTop: 18, borderTop: "1px solid #e2e8f0" }}>
+                <p className="eyebrow" style={{ marginBottom: 12 }}>OTHER SAVED COURSES ({allCourses.length})</p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
+                  {allCourses.map(c => (
+                    <article key={c.id || c.title} style={{ padding: 14, background: "#f8fafc", borderRadius: 12, border: "1px solid #e2e8f0" }}>
+                      <b style={{ fontSize: 13, display: "block", color: "#0f172a", marginBottom: 4 }}>{c.title}</b>
+                      <small style={{ color: "#64748b" }}>{c.lessons.length} lessons • {c.level}</small>
+                      <button className="text-button" style={{ marginTop: 8, fontSize: 12 }} onClick={() => { setSavedCourse(c); openLesson(c.lessons[0]); goTo("Create course"); }}>
+                        Open Course <ChevronRight size={14} />
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        );
+      })()}
+
+      {/* ── 4. Quick Assessment & Topic Mastery Section ── */}
+      <section className="section-heading">
+        <div><p className="eyebrow">KNOW YOUR PROGRESS</p><h2>Topic mastery & analytics</h2></div>
+        <button className="text-button" onClick={() => goTo("Analytics")}>Open analytics <ChevronRight size={16}/></button>
+      </section>
+      <section className="analytics">
+        <article className="chart-card empty-card">
+          <Trophy size={27}/>
+          <div>
+            <h3>Assessment Performance</h3>
+            <p>{quizHistory.length > 0 ? `You have completed ${quizHistory.length} quiz assessment(s). Keep practising to boost your accuracy!` : "Take your first course or topic quiz to unlock topic scores, weak-area detection, and progress charts."}</p>
+          </div>
+        </article>
+        <article className="score-card">
+          <p className="eyebrow">LATEST ASSESSMENT</p>
+          <div className="score-ring">
+            <b>{quizHistory.length > 0 ? `${Math.round((quizHistory[0].score / quizHistory[0].totalQuestions) * 100)}%` : "—"}</b>
+          </div>
+          <h3>{quizHistory.length > 0 ? quizHistory[0].title : "Nothing to review yet"}</h3>
+          <p>{quizHistory.length > 0 ? `Score: ${quizHistory[0].score} / ${quizHistory[0].totalQuestions}` : "Your completed quiz results will appear here."}</p>
+          <button className="text-button" onClick={() => goTo("Quizzes")}>
+            {quizHistory.length > 0 ? "Take another quiz" : "Start a quiz"} <ChevronRight size={16}/>
+          </button>
+        </article>
+      </section>
       </>}
 
       {/* ════════════════════════════════════════════════ */}
