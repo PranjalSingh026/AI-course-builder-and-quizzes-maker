@@ -1803,7 +1803,7 @@ h1 span {
   
   main {
     margin-left: 0 !important;
-    padding: 22px 16px 50px !important;
+    padding: 20px 22px 60px !important;
     width: 100% !important;
   }
   
@@ -1823,7 +1823,32 @@ h1 span {
 
 @media (max-width: 620px) {
   main {
-    padding: 22px 16px;
+    padding: 18px 20px 60px !important;
+  }
+
+  .mobile-header {
+    margin: -18px -20px 22px !important;
+    padding: 14px 20px !important;
+  }
+
+  .cyber-hub-wrapper {
+    padding: 24px 18px !important;
+    border-radius: 20px !important;
+    margin-bottom: 22px !important;
+  }
+
+  .cyber-hub-title {
+    font-size: 23px !important;
+  }
+
+  .continue-learning-card,
+  .dashboard-hero-banner,
+  .create-card,
+  .chart-card,
+  .score-card {
+    padding: 20px 18px !important;
+    border-radius: 18px !important;
+    margin-bottom: 20px !important;
   }
   
   .controls {
@@ -1840,7 +1865,7 @@ h1 span {
   }
   
   header h1 {
-    font-size: 25px;
+    font-size: 24px;
   }
   
   .generated > button {
