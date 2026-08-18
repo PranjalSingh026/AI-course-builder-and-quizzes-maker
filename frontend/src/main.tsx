@@ -537,7 +537,7 @@ function App() {
 
       <section className="topic-practice" ref={quizRef} id="topic-practice">
         <div><p className="eyebrow">TOPIC PRACTICE</p><h2>Practise any topic</h2><p>Search a topic to receive a fresh 10-question assessment. Viewing a solution makes that question worth 0 points.</p></div>
-        <div className="topic-search"><input value={practiceTopic} onChange={event => setPracticeTopic(event.target.value)} onKeyDown={event => { if (event.key === "Enter") generateTopicQuiz(); }} placeholder="e.g. practice assessments, DBMS joins" aria-label="Practice topic"/><button className="primary" onClick={generateTopicQuiz} disabled={practiceLoading}>{practiceLoading ? "Creating quiz..." : "Start practice"}</button></div>
+        <div className="topic-search"><input value={practiceTopic} onChange={event => setPracticeTopic(event.target.value)} onKeyDown={event => { if (event.key === "Enter") generateTopicQuiz(); }} placeholder="Search what you want to learn..." aria-label="Practice topic"/><button className="primary" onClick={generateTopicQuiz} disabled={practiceLoading}>{practiceLoading ? "Creating quiz..." : "Start practice"}</button></div>
 
         {/* ── NEW: Difficulty selector ── */}
         <div className="difficulty-selector">
