@@ -1662,42 +1662,149 @@ h1 span {
   margin-top: 12px;
 }
 
-/* Responsive Rules */
+/* Mobile Header Styles */
+.mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-card);
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  margin: -28px -4% 22px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.mobile-header .brand {
+  color: var(--text-main);
+  font-size: 19px;
+}
+
+.mobile-header .brand > span:last-child span {
+  color: var(--primary-blue);
+}
+
+.mobile-close-btn {
+  display: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  margin-left: auto;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.mobile-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.hamburger-btn {
+  background: #f8fafc;
+  border: 1px solid var(--border-card);
+  color: var(--text-main);
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.hamburger-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.mobile-overlay {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Responsive Rules (Strictly for phones & tablets <= 900px) */
 @media (max-width: 900px) {
   .sidebar {
-    position: static;
-    width: 68px;
-    padding: 18px 9px;
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    z-index: 1000 !important;
+    transform: translateX(-100%) !important;
+    width: 270px !important;
+    padding: 24px 18px !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.3) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
   }
   
-  .brand > span:last-child, .sidebar nav button {
-    font-size: 0;
+  .sidebar.mobile-open {
+    transform: translateX(0) !important;
   }
-  
-  .brand {
-    justify-content: center;
+
+  .sidebar .brand {
+    display: flex !important;
+    justify-content: space-between !important;
+    width: 100% !important;
   }
-  
+
+  .sidebar .brand > span:last-child {
+    font-size: 20px !important;
+    display: inline !important;
+  }
+
+  .sidebar nav {
+    display: grid !important;
+    gap: 8px !important;
+    margin-top: 32px !important;
+  }
+
   .sidebar nav button {
-    justify-content: center;
-    padding: 12px;
+    justify-content: flex-start !important;
+    padding: 12px 14px !important;
+    font-size: 14px !important;
+    width: 100% !important;
   }
-  
-  .upgrade, .profile > div:not(.avatar) {
-    display: none;
+
+  .sidebar .upgrade {
+    display: block !important;
+    margin-top: auto !important;
   }
-  
-  .profile {
-    justify-content: center;
+
+  .sidebar .profile {
+    display: flex !important;
+    justify-content: flex-start !important;
+    margin-top: 16px !important;
   }
-  
-  .profile .avatar {
-    display: grid;
+
+  .sidebar .profile > div:not(.avatar) {
+    display: block !important;
+  }
+
+  .mobile-header {
+    display: flex !important;
+  }
+
+  .mobile-close-btn {
+    display: flex !important;
   }
   
   main {
-    margin-left: 0;
-    padding: 28px 4%;
+    margin-left: 0 !important;
+    padding: 22px 16px 50px !important;
+    width: 100% !important;
   }
   
   .hero-grid, .learning-grid, .analytics {

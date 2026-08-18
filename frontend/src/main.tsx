@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { AlertCircle, BarChart3, Bell, BookOpen, BrainCircuit, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Compass, ExternalLink, Home, Lock, LogIn, LogOut, Mail, PlayCircle, Plus, Sparkles, Target, Trophy, User, UserPlus, X } from "lucide-react";
+import { AlertCircle, BarChart3, Bell, BookOpen, BrainCircuit, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Compass, ExternalLink, Home, Lock, LogIn, LogOut, Mail, Menu, PlayCircle, Plus, Sparkles, Target, Trophy, User, UserPlus, X } from "lucide-react";
 import { completeLesson, ensureLearningUser, loadLatestCourse, saveCourse as persistCourse, saveQuizResult } from "./lib/learning-data";
 import type { CourseWithProgress, QuizHistoryItem } from "./lib/learning-data";
 import { loadAllCourses, loadQuizHistory } from "./lib/learning-data";
@@ -55,6 +55,9 @@ function App() {
   const [authName, setAuthName] = useState("");
   const [authError, setAuthError] = useState("");
   const [authSubmitting, setAuthSubmitting] = useState(false);
+
+  /* ── Mobile Menu State ── */
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   /* ── NEW: Quiz difficulty ── */
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
@@ -267,6 +270,7 @@ function App() {
   /* ── CHANGED: page-based routing instead of scroll ── */
   function goTo(item: string) {
     setActiveNav(item);
+    setIsMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
     if (item === "My learning" && userId) {
       void loadMyLearningData();
@@ -436,8 +440,21 @@ function App() {
   </>;
 
   return <div className="app-shell">
-    <aside className="sidebar">
-      <div className="brand"><span className="brand-mark"><BrainCircuit size={21}/></span><span>Aster<span>Learn</span></span></div>
+    {isMobileMenuOpen && (
+      <div 
+        className="mobile-overlay" 
+        onClick={() => setIsMobileMenuOpen(false)}
+        aria-label="Close menu"
+      />
+    )}
+    <aside className={`sidebar ${isMobileMenuOpen ? "mobile-open" : ""}`}>
+      <div className="brand">
+        <span className="brand-mark"><BrainCircuit size={21}/></span>
+        <span>Aster<span>Learn</span></span>
+        <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
+          <X size={20} />
+        </button>
+      </div>
       <nav>
         <button className={activeNav === "Dashboard" ? "active" : ""} onClick={() => goTo("Dashboard")}><Home size={19}/>Dashboard</button>
         <button className={activeNav === "My learning" ? "active" : ""} onClick={() => goTo("My learning")}><BookOpen size={19}/>My learning</button>
@@ -485,6 +502,16 @@ function App() {
       </div>
     </aside>
     <main>
+      <div className="mobile-header">
+        <div className="brand mobile-only">
+          <span className="brand-mark"><BrainCircuit size={21}/></span>
+          <span>Aster<span>Learn</span></span>
+        </div>
+        <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>
+          <Menu size={24} />
+        </button>
+      </div>
+
       {notice && <div className="toast" role="status">{notice}</div>}
 
       {/* ════════════════════════════════════════════════ */}
