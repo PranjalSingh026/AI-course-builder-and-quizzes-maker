@@ -551,7 +551,14 @@ function App() {
 
         {/* ── Practice quiz display ── */}
         {practiceQuiz && <section className="quiz-panel">
-          <p className="eyebrow">{practiceSeqMode ? `QUESTION ${practiceSeqIndex + 1} OF ${practiceQuiz.questions.length}` : "10-QUESTION ASSESSMENT"}</p>
+          <div className="quiz-header-top">
+            <span className={`quiz-diff-badge diff-tag-${difficulty}`}>
+              {difficulty === "easy" ? "🟢 EASY" : difficulty === "medium" ? "🟡 MEDIUM" : "🔴 HARD"}
+            </span>
+            <p className="eyebrow" style={{ margin: 0 }}>
+              {practiceSeqMode ? `QUESTION ${practiceSeqIndex + 1} OF ${practiceQuiz.questions.length}` : "10-QUESTION ASSESSMENT"}
+            </p>
+          </div>
           <h3>{practiceQuiz.title}</h3>
 
           {/* Sequential mode: one question at a time */}
