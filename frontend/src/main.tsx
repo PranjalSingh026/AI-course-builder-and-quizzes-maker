@@ -332,7 +332,12 @@ function App() {
   async function generateLessonQuiz() {
     if (!selectedLesson) return;
     setQuizLoading(true); setNotice("");
-    const api = import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
+    let api = import.meta.env.VITE_API_URL;
+    if (api && api.includes("localhost") && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      api = "/api/v1";
+    } else if (!api) {
+      api = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
+    }
     try {
       /* CHANGED: now sends difficulty */
       const response = await fetch(`${api}/quizzes/generate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lesson_title: selectedLesson.title, lesson_summary: selectedLesson.summary, objectives: selectedLesson.objectives, question_count: 5, difficulty }) });
@@ -352,7 +357,12 @@ function App() {
       pushNotice(`Auto-corrected "${raw}" to: ${suggestion.label}`);
     }
     setPracticeLoading(true); setNotice("");
-    const api = import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
+    let api = import.meta.env.VITE_API_URL;
+    if (api && api.includes("localhost") && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      api = "/api/v1";
+    } else if (!api) {
+      api = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
+    }
     try {
       /* CHANGED: now sends difficulty */
       const response = await fetch(`${api}/quizzes/topic`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic, question_count: 10, difficulty }) });
@@ -407,7 +417,12 @@ function App() {
       pushNotice(`Auto-corrected "${raw}" to: ${suggestion.label}`);
     }
     setPracticeLoading(true); setNotice("");
-    const api = import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
+    let api = import.meta.env.VITE_API_URL;
+    if (api && api.includes("localhost") && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      api = "/api/v1";
+    } else if (!api) {
+      api = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
+    }
     try {
       const response = await fetch(`${api}/quizzes/topic`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic, question_count: 10, difficulty }) });
       if (!response.ok) throw new Error("A quiz could not be generated for this topic. Please try again.");
@@ -425,7 +440,12 @@ function App() {
   async function createCourse() {
     if (goal.trim().length < 8) { pushNotice("Please describe a learning goal in a little more detail."); return; }
     setLoading(true); setNotice("");
-    const api = import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
+    let api = import.meta.env.VITE_API_URL;
+    if (api && api.includes("localhost") && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      api = "/api/v1";
+    } else if (!api) {
+      api = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
+    }
     try {
       const response = await fetch(`${api}/courses/generate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal, level, lesson_count: lessonCount }) });
       if (!response.ok) {
