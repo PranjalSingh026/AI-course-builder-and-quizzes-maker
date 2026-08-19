@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { AlertCircle, BarChart3, Bell, BookOpen, BrainCircuit, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Compass, ExternalLink, GraduationCap, Home, Lock, LogIn, LogOut, Mail, Menu, PlayCircle, Plus, Sparkles, Target, Trophy, User, UserPlus, X } from "lucide-react";
+import { AlertCircle, BarChart3, Bell, BookOpen, BrainCircuit, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Compass, ExternalLink, Globe, Home, Lock, LogIn, LogOut, Mail, Menu, PlayCircle, Plus, Sparkles, Target, Trophy, User, UserPlus, X } from "lucide-react";
 import { completeLesson, ensureLearningUser, loadLatestCourse, saveCourse as persistCourse, saveQuizResult } from "./lib/learning-data";
 import type { CourseWithProgress, QuizHistoryItem } from "./lib/learning-data";
 import { loadAllCourses, loadQuizHistory } from "./lib/learning-data";
@@ -449,7 +449,7 @@ function App() {
     )}
     <aside className={`sidebar ${isMobileMenuOpen ? "mobile-open" : ""}`}>
       <div className="brand">
-        <span className="brand-mark"><GraduationCap size={22}/></span>
+        <span className="brand-mark"><Globe size={22}/></span>
         <span>Edu<span>Sphere</span></span>
         <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
           <X size={20} />
@@ -504,7 +504,7 @@ function App() {
     <main>
       <div className="mobile-header">
         <div className="brand mobile-only">
-          <span className="brand-mark"><GraduationCap size={22}/></span>
+          <span className="brand-mark"><Globe size={22}/></span>
           <span>Edu<span>Sphere</span></span>
         </div>
         <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>
