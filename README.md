@@ -1,4 +1,4 @@
-# AsterLearn
+# EduSphere
 
 A deployable, AI-powered personalized learning and adaptive assessment platform.
 

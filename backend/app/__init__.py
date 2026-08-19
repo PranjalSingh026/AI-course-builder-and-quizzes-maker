@@ -1,1 +1,1 @@
-"""AsterLearn backend package."""
+"""EduSphere backend package."""

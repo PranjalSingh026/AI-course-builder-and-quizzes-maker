@@ -20,12 +20,12 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<CoursePreview | null>(null);
   const [savedCourse, setSavedCourse] = useState<CoursePreview | null>(() => {
-    try { return JSON.parse(window.localStorage.getItem("asterlearn-course") || "null") as CoursePreview | null; }
+    try { return JSON.parse(window.localStorage.getItem("edusphere-course") || window.localStorage.getItem("asterlearn-course") || "null") as CoursePreview | null; }
     catch { return null; }
   });
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [completedLessons, setCompletedLessons] = useState<string[]>(() => {
-    try { return JSON.parse(window.localStorage.getItem("asterlearn-completed-lessons") || "[]") as string[]; }
+    try { return JSON.parse(window.localStorage.getItem("edusphere-completed-lessons") || window.localStorage.getItem("asterlearn-completed-lessons") || "[]") as string[]; }
     catch { return []; }
   });
   const [quiz, setQuiz] = useState<Quiz | null>(null);
@@ -219,7 +219,7 @@ function App() {
         setAuthEmail("");
         setAuthPassword("");
         setAuthName("");
-        pushNotice(`Account created successfully! Welcome to AsterLearn.`);
+        pushNotice(`Account created successfully! Welcome to EduSphere.`);
         const { course, completedLessonIds } = await loadLatestCourse(data.user.id);
         if (course) setSavedCourse(course);
         setCompletedLessons(completedLessonIds);
@@ -237,7 +237,7 @@ function App() {
           setAuthEmail("");
           setAuthPassword("");
           setAuthName("");
-          pushNotice(`Account created successfully! Welcome to AsterLearn.`);
+          pushNotice(`Account created successfully! Welcome to EduSphere.`);
           const { course, completedLessonIds } = await loadLatestCourse(loginRes.data.user.id);
           if (course) setSavedCourse(course);
           setCompletedLessons(completedLessonIds);
@@ -299,7 +299,7 @@ function App() {
     try {
       const lessonsToSave = preview.lessons.map((lesson, idx) => ({ title: lesson.title, summary: lesson.summary, objectives: lesson.objectives, position: lesson.position ?? (idx + 1) }));
       const saved = await persistCourse(userId, { goal, title: preview.title, description: preview.description, level: preview.level, lessons: lessonsToSave });
-      window.localStorage.setItem("asterlearn-course", JSON.stringify(saved));
+      window.localStorage.setItem("edusphere-course", JSON.stringify(saved));
       setSavedCourse(saved);
       pushNotice("Course saved securely to your learning library.");
     } catch (error) {
@@ -323,7 +323,7 @@ function App() {
       return;
     }
     const updated = Array.from(new Set([...completedLessons, selectedLesson.id]));
-    window.localStorage.setItem("asterlearn-completed-lessons", JSON.stringify(updated));
+    window.localStorage.setItem("edusphere-completed-lessons", JSON.stringify(updated));
     setCompletedLessons(updated);
     pushNotice("Lesson marked complete and saved securely.");
   }
@@ -428,7 +428,7 @@ function App() {
   /* ── Reusable lesson reader + course builder blocks ── */
   const courseBuilderBlock = <>
     <section className="hero-grid" ref={builderRef}>
-      <div className="create-card"><div className="card-label"><Sparkles size={17}/> AI COURSE BUILDER</div><h2>What do you want to master?</h2><p>Tell AsterLearn your goal. It will create a structured, personalized path.</p><textarea value={goal} onChange={e => setGoal(e.target.value)} aria-label="Learning goal" />
+      <div className="create-card"><div className="card-label"><Sparkles size={17}/> AI COURSE BUILDER</div><h2>What do you want to master?</h2><p>Tell EduSphere your goal. It will create a structured, personalized path.</p><textarea value={goal} onChange={e => setGoal(e.target.value)} aria-label="Learning goal" />
         <div className="controls"><label>Level<select value={level} onChange={e => setLevel(e.target.value)}><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></label><label>Lessons<select value={lessonCount} onChange={e => setLessonCount(Number(e.target.value))}><option value={3}>3 lessons</option><option value={4}>4 lessons</option><option value={5}>5 lessons</option><option value={6}>6 lessons</option></select></label><button className="primary" onClick={createCourse} disabled={loading}>{loading ? "Creating path..." : <><Sparkles size={17}/> Generate course</>}</button></div>
         {notice && <p className="notice">{notice}</p>}
       </div>
@@ -450,7 +450,7 @@ function App() {
     <aside className={`sidebar ${isMobileMenuOpen ? "mobile-open" : ""}`}>
       <div className="brand">
         <span className="brand-mark"><BrainCircuit size={21}/></span>
-        <span>Aster<span>Learn</span></span>
+        <span>Edu<span>Sphere</span></span>
         <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
           <X size={20} />
         </button>
@@ -505,7 +505,7 @@ function App() {
       <div className="mobile-header">
         <div className="brand mobile-only">
           <span className="brand-mark"><BrainCircuit size={21}/></span>
-          <span>Aster<span>Learn</span></span>
+          <span>Edu<span>Sphere</span></span>
         </div>
         <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>
           <Menu size={24} />
@@ -731,7 +731,7 @@ function App() {
       {/* PAGE: Create Course                              */}
       {/* ════════════════════════════════════════════════ */}
       {activeNav === "Create course" && <>
-      <header><div><p className="eyebrow">AI COURSE BUILDER</p><h1>Create a new course <span>✦</span></h1><p className="subtitle">Describe your learning goal and AsterLearn will build a personalised path.</p></div></header>
+      <header><div><p className="eyebrow">AI COURSE BUILDER</p><h1>Create a new course <span>✦</span></h1><p className="subtitle">Describe your learning goal and EduSphere will build a personalised path.</p></div></header>
       {courseBuilderBlock}
       </>}
 

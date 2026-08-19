@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "AsterLearn API"
+    app_name: str = "EduSphere API"
     database_url: str = "postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres"
     frontend_origin: str = "http://localhost:5173"
     gemini_api_key: str = ""
