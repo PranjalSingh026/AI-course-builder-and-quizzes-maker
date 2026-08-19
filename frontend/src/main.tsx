@@ -449,7 +449,7 @@ function App() {
     )}
     <aside className={`sidebar ${isMobileMenuOpen ? "mobile-open" : ""}`}>
       <div className="brand">
-        <span className="brand-mark"><Globe size={22}/></span>
+        <img src="/logo.png" alt="EduSphere" className="brand-logo-img" />
         <span>Edu<span>Sphere</span></span>
         <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
           <X size={20} />
@@ -504,7 +504,7 @@ function App() {
     <main>
       <div className="mobile-header">
         <div className="brand mobile-only">
-          <span className="brand-mark"><Globe size={22}/></span>
+          <img src="/logo.png" alt="EduSphere" className="brand-logo-img" />
           <span>Edu<span>Sphere</span></span>
         </div>
         <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)}>

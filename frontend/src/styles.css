@@ -60,6 +60,15 @@ body {
   font: 600 22px Outfit;
 }
 
+.brand-logo-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: block;
+}
+
 .brand-mark, .ai-badge {
   width: 35px;
   height: 35px;
