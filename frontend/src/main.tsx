@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { AlertCircle, BarChart3, Bell, BookOpen, BrainCircuit, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Compass, ExternalLink, Globe, Home, Lock, LogIn, LogOut, Mail, Menu, PlayCircle, Plus, Sparkles, Target, Trophy, User, UserPlus, X } from "lucide-react";
+import { getAutocorrectSuggestion } from "./lib/autocorrect";
 import { completeLesson, ensureLearningUser, loadLatestCourse, saveCourse as persistCourse, saveQuizResult } from "./lib/learning-data";
 import type { CourseWithProgress, QuizHistoryItem } from "./lib/learning-data";
 import { loadAllCourses, loadQuizHistory } from "./lib/learning-data";
@@ -331,7 +332,7 @@ function App() {
   async function generateLessonQuiz() {
     if (!selectedLesson) return;
     setQuizLoading(true); setNotice("");
-    const api = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+    const api = import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
     try {
       /* CHANGED: now sends difficulty */
       const response = await fetch(`${api}/quizzes/generate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lesson_title: selectedLesson.title, lesson_summary: selectedLesson.summary, objectives: selectedLesson.objectives, question_count: 5, difficulty }) });
@@ -342,10 +343,16 @@ function App() {
   }
 
   async function generateTopicQuiz() {
-    const topic = practiceTopic.trim();
-    if (topic.length < 3) { pushNotice("Enter a topic with at least 3 characters to start practice."); return; }
+    const raw = practiceTopic.trim();
+    if (raw.length < 3) { pushNotice("Enter a topic with at least 3 characters to start practice."); return; }
+    const suggestion = getAutocorrectSuggestion(raw);
+    const topic = suggestion ? suggestion.corrected : raw;
+    if (suggestion) {
+      setPracticeTopic(suggestion.corrected);
+      pushNotice(`Auto-corrected "${raw}" to: ${suggestion.label}`);
+    }
     setPracticeLoading(true); setNotice("");
-    const api = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+    const api = import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
     try {
       /* CHANGED: now sends difficulty */
       const response = await fetch(`${api}/quizzes/topic`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic, question_count: 10, difficulty }) });
@@ -391,10 +398,16 @@ function App() {
 
   /* ── NEW: Start sequential practice ("Next Question" mode) ── */
   async function startSeqPractice() {
-    const topic = practiceTopic.trim();
-    if (topic.length < 3) { pushNotice("Enter a topic with at least 3 characters to start practice."); return; }
+    const raw = practiceTopic.trim();
+    if (raw.length < 3) { pushNotice("Enter a topic with at least 3 characters to start practice."); return; }
+    const suggestion = getAutocorrectSuggestion(raw);
+    const topic = suggestion ? suggestion.corrected : raw;
+    if (suggestion) {
+      setPracticeTopic(suggestion.corrected);
+      pushNotice(`Auto-corrected "${raw}" to: ${suggestion.label}`);
+    }
     setPracticeLoading(true); setNotice("");
-    const api = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+    const api = import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
     try {
       const response = await fetch(`${api}/quizzes/topic`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic, question_count: 10, difficulty }) });
       if (!response.ok) throw new Error("A quiz could not be generated for this topic. Please try again.");
@@ -412,7 +425,7 @@ function App() {
   async function createCourse() {
     if (goal.trim().length < 8) { pushNotice("Please describe a learning goal in a little more detail."); return; }
     setLoading(true); setNotice("");
-    const api = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+    const api = import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" ? "http://localhost:8000/api/v1" : "/api/v1");
     try {
       const response = await fetch(`${api}/courses/generate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal, level, lesson_count: lessonCount }) });
       if (!response.ok) {
@@ -556,6 +569,8 @@ function App() {
             onChange={(e) => { setGoal(e.target.value); setPracticeTopic(e.target.value); }}
             placeholder="Search what you want to learn today..."
             aria-label="Search learning goal or topic"
+            spellCheck="true"
+            autoCorrect="on"
           />
           <div className="cyber-search-actions">
             <button className="primary cyber-btn-violet" onClick={() => { goTo("Create course"); void createCourse(); }}>
@@ -788,7 +803,7 @@ function App() {
 
       <section className="topic-practice" ref={quizRef} id="topic-practice">
         <div><p className="eyebrow">TOPIC PRACTICE</p><h2>Practise any topic</h2><p>Search a topic to receive a fresh 10-question assessment. Viewing a solution makes that question worth 0 points.</p></div>
-        <div className="topic-search"><input value={practiceTopic} onChange={event => setPracticeTopic(event.target.value)} onKeyDown={event => { if (event.key === "Enter") generateTopicQuiz(); }} placeholder="Search what you want to learn..." aria-label="Practice topic"/><button className="primary" onClick={generateTopicQuiz} disabled={practiceLoading}>{practiceLoading ? "Creating quiz..." : "Start practice"}</button></div>
+        <div className="topic-search"><input value={practiceTopic} onChange={event => setPracticeTopic(event.target.value)} onKeyDown={event => { if (event.key === "Enter") generateTopicQuiz(); }} placeholder="Search what you want to learn..." aria-label="Practice topic" spellCheck="true" autoCorrect="on"/><button className="primary" onClick={generateTopicQuiz} disabled={practiceLoading}>{practiceLoading ? "Creating quiz..." : "Start practice"}</button></div>
 
         {/* ── NEW: Difficulty selector ── */}
         <div className="difficulty-selector">
