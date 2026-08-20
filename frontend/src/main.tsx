@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { AlertCircle, BarChart3, Bell, BookOpen, BrainCircuit, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Compass, ExternalLink, Globe, Home, Lock, LogIn, LogOut, Mail, Menu, PlayCircle, Plus, Sparkles, Target, Trophy, User, UserPlus, X } from "lucide-react";
-import { getAutocorrectSuggestion } from "./lib/autocorrect";
+
 import { completeLesson, ensureLearningUser, loadLatestCourse, saveCourse as persistCourse, saveQuizResult } from "./lib/learning-data";
 import type { CourseWithProgress, QuizHistoryItem } from "./lib/learning-data";
 import { loadAllCourses, loadQuizHistory } from "./lib/learning-data";
@@ -123,6 +123,14 @@ function App() {
         const { course, completedLessonIds } = await loadLatestCourse(user.id);
         if (course) setSavedCourse(course);
         setCompletedLessons(completedLessonIds);
+
+        const [courses, history] = await Promise.all([
+          loadAllCourses(user.id),
+          loadQuizHistory(user.id),
+        ]);
+        setAllCourses(courses);
+        setQuizHistory(history);
+        setLearningLoaded(true);
       } catch (error) {
         pushNotice(error instanceof Error ? `Supabase data could not be loaded: ${error.message}` : "Supabase data could not be loaded.");
       }
@@ -273,7 +281,7 @@ function App() {
     setActiveNav(item);
     setIsMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
-    if (item === "My learning" && userId) {
+    if ((item === "My learning" || item === "Analytics" || item === "Dashboard") && userId) {
       void loadMyLearningData();
     }
   }
@@ -350,12 +358,8 @@ function App() {
   async function generateTopicQuiz() {
     const raw = practiceTopic.trim();
     if (raw.length < 3) { pushNotice("Enter a topic with at least 3 characters to start practice."); return; }
-    const suggestion = getAutocorrectSuggestion(raw);
-    const topic = suggestion ? suggestion.corrected : raw;
-    if (suggestion) {
-      setPracticeTopic(suggestion.corrected);
-      pushNotice(`Auto-corrected "${raw}" to: ${suggestion.label}`);
-    }
+    const topic = raw;
+    
     setPracticeLoading(true); setNotice("");
     let api = import.meta.env.VITE_API_URL;
     if (api && api.includes("localhost") && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
@@ -388,6 +392,7 @@ function App() {
     if (!userId) { pushNotice("Your result is ready, but the secure learning account is still loading."); return; }
     try {
       await saveQuizResult({ userId, title: practiceQuiz.title, topic: practiceTopic.trim(), sourceType: "topic_practice", questions: practiceQuiz.questions, answers: practiceAnswers, revealedAnswerIndexes: revealedAnswers, score });
+      void loadMyLearningData();
     } catch (error) {
       pushNotice(error instanceof Error ? `Result could not be saved: ${error.message}` : "Result could not be saved to Supabase.");
     }
@@ -401,6 +406,7 @@ function App() {
     if (!userId) return;
     try {
       await saveQuizResult({ userId, title: quiz.title, sourceType: "lesson", courseId: savedCourse?.id, lessonId: selectedLesson?.id, questions: quiz.questions, answers, revealedAnswerIndexes: [], score });
+      void loadMyLearningData();
     } catch (error) {
       pushNotice(error instanceof Error ? `Lesson quiz result could not be saved: ${error.message}` : "Lesson quiz result could not be saved to Supabase.");
     }
@@ -410,12 +416,8 @@ function App() {
   async function startSeqPractice() {
     const raw = practiceTopic.trim();
     if (raw.length < 3) { pushNotice("Enter a topic with at least 3 characters to start practice."); return; }
-    const suggestion = getAutocorrectSuggestion(raw);
-    const topic = suggestion ? suggestion.corrected : raw;
-    if (suggestion) {
-      setPracticeTopic(suggestion.corrected);
-      pushNotice(`Auto-corrected "${raw}" to: ${suggestion.label}`);
-    }
+    const topic = raw;
+    
     setPracticeLoading(true); setNotice("");
     let api = import.meta.env.VITE_API_URL;
     if (api && api.includes("localhost") && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
@@ -887,7 +889,26 @@ function App() {
       {/* ════════════════════════════════════════════════ */}
       {activeNav === "Analytics" && <>
       <header><div><p className="eyebrow">KNOW YOUR PROGRESS</p><h1>Analytics <span>✦</span></h1><p className="subtitle">Track your quiz scores, identify weak areas, and measure your growth.</p></div></header>
-      <section className="analytics"><article className="chart-card empty-card"><Trophy size={27}/><div><h3>No assessment data yet</h3><p>Take your first course quiz to unlock topic scores, weak-area detection, and progress charts.</p></div></article><article className="score-card"><p className="eyebrow">LATEST ASSESSMENT</p><div className="score-ring"><b>—</b></div><h3>Nothing to review yet</h3><p>Your first completed quiz will appear here.</p><button className="text-button" onClick={() => goTo("Quizzes")}>Start a quiz <ChevronRight size={16}/></button></article></section>
+      <section className="analytics">
+        <article className="chart-card empty-card">
+          <Trophy size={27}/>
+          <div>
+            <h3>Assessment Performance</h3>
+            <p>{quizHistory.length > 0 ? `You have completed ${quizHistory.length} quiz assessment(s). Keep practising to boost your accuracy!` : "Take your first course or topic quiz to unlock topic scores, weak-area detection, and progress charts."}</p>
+          </div>
+        </article>
+        <article className="score-card">
+          <p className="eyebrow">LATEST ASSESSMENT</p>
+          <div className="score-ring">
+            <b>{quizHistory.length > 0 ? `${Math.round((quizHistory[0].score / quizHistory[0].totalQuestions) * 100)}%` : "—"}</b>
+          </div>
+          <h3>{quizHistory.length > 0 ? quizHistory[0].title : "Nothing to review yet"}</h3>
+          <p>{quizHistory.length > 0 ? `Score: ${quizHistory[0].score} / ${quizHistory[0].totalQuestions}` : "Your completed quiz results will appear here."}</p>
+          <button className="text-button" onClick={() => goTo("Quizzes")}>
+            {quizHistory.length > 0 ? "Take another quiz" : "Start a quiz"} <ChevronRight size={16}/>
+          </button>
+        </article>
+      </section>
       </>}
 
     </main>
