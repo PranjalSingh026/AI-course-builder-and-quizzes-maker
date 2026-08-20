@@ -579,7 +579,7 @@ function App() {
       {/* ── 1. AI Cyber-Hub Hero & Prompt Search ── */}
       <section className="cyber-hub-wrapper">
         <div className="cyber-eyebrow">
-          <Sparkles size={13} /> AI CYBER LEARNING HUB
+          <Sparkles size={13} /> AI LEARNING HUB
         </div>
         <h2 className="cyber-hub-title">What skill do you want to master today?</h2>
         <p className="cyber-hub-subtitle">Type any topic or learning goal below to generate a custom AI course or launch an instant topic assessment.</p>
