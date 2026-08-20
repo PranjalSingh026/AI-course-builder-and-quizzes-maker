@@ -25,6 +25,10 @@
       "dest": "/frontend/assets/$1"
     },
     {
+      "src": "/(favicon\\.png|logo\\.png)",
+      "dest": "/frontend/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/frontend/index.html"
     }
