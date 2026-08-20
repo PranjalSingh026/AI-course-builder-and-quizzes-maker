@@ -611,12 +611,12 @@ function App() {
           </p>
           <div className="cyber-chips-row">
             {[
-              { label: "💻 Web Development", topic: "React & Node.js web development" },
-              { label: "🤖 Machine Learning & AI", topic: "Machine learning algorithms and neural networks" },
-              { label: "🗄️ DBMS & SQL Joins", topic: "Database management systems and SQL queries" },
-              { label: "⚡ Data Structures & Algorithms", topic: "Data structures and algorithm design" },
-              { label: "🛡️ Cyber Security & Cloud", topic: "Cybersecurity fundamentals and cloud architecture" },
-              { label: "📊 Data Science & Python", topic: "Data analysis and visualization with Python" },
+              { label: "Web Development", topic: "React & Node.js web development" },
+              { label: "Machine Learning & AI", topic: "Machine learning algorithms and neural networks" },
+              { label: "DBMS & SQL Joins", topic: "Database management systems and SQL queries" },
+              { label: "Data Structures & Algorithms", topic: "Data structures and algorithm design" },
+              { label: "Cyber Security & Cloud", topic: "Cybersecurity fundamentals and cloud architecture" },
+              { label: "Data Science & Python", topic: "Data analysis and visualization with Python" },
             ].map(chip => (
               <button
                 key={chip.label}
