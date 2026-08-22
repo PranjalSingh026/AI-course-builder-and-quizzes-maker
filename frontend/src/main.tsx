@@ -50,11 +50,12 @@ function App() {
   /* ── Auth System State ── */
   const [authUser, setAuthUser] = useState<any | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [authMode, setAuthMode] = useState<"login" | "register" | "magic">("login");
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
   const [authName, setAuthName] = useState("");
   const [authError, setAuthError] = useState("");
+  const [authSuccess, setAuthSuccess] = useState("");
   const [authSubmitting, setAuthSubmitting] = useState(false);
 
   /* ── Mobile Menu State ── */
@@ -259,6 +260,32 @@ function App() {
       }
     } catch (err: any) {
       setAuthError(err.message || "Registration failed. Please try again.");
+    } finally {
+      setAuthSubmitting(false);
+    }
+  }
+
+  async function handleMagicLink(e: React.FormEvent) {
+    e.preventDefault();
+    const cleanEmail = authEmail.trim().toLowerCase();
+    if (!cleanEmail) {
+      setAuthError("Please enter your email address.");
+      return;
+    }
+    setAuthSubmitting(true);
+    setAuthError("");
+    setAuthSuccess("");
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: cleanEmail,
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
+      });
+      if (error) throw error;
+      setAuthSuccess("Check your email! We've sent you a magic link to log in.");
+    } catch (err: any) {
+      setAuthError(err.message || "Failed to send magic link.");
     } finally {
       setAuthSubmitting(false);
     }
@@ -606,7 +633,7 @@ function App() {
 
         {/* Interactive Neon Skill Matrix */}
         <div style={{ marginTop: 20 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px", color: "#a78bfa", textTransform: "uppercase", margin: "0 0 10px" }}>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px", color: "#7B1E2B", textTransform: "uppercase", margin: "0 0 10px" }}>
             POPULAR AI LEARNING PATHS
           </p>
           <div className="cyber-chips-row">
@@ -699,16 +726,16 @@ function App() {
               <span className="cl-badge">CONTINUE LEARNING</span>
               <span className="pill">{activeCourse.level.toUpperCase()} LEVEL</span>
             </div>
-            <h3 style={{ fontSize: 22, margin: "6px 0", color: "#0f172a" }}>{activeCourse.title}</h3>
-            <p style={{ color: "#64748b", fontSize: 13.5, margin: "0 0 14px", lineHeight: 1.5 }}>{activeCourse.description}</p>
+            <h3 style={{ fontSize: 22, margin: "6px 0", color: "#1F1F1F" }}>{activeCourse.title}</h3>
+            <p style={{ color: "#6B7280", fontSize: 13.5, margin: "0 0 14px", lineHeight: 1.5 }}>{activeCourse.description}</p>
             
             <div className="cl-progress-bar">
               <div className="cl-progress-fill" style={{ width: `${pct}%` }} />
             </div>
 
             <div className="cl-footer">
-              <p style={{ fontSize: 13, color: "#475569", margin: 0, fontWeight: 500 }}>
-                <CheckCircle2 size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: 6, color: "#2563eb" }} />
+              <p style={{ fontSize: 13, color: "#6B7280", margin: 0, fontWeight: 500 }}>
+                <CheckCircle2 size={16} style={{ display: "inline", verticalAlign: "middle", marginRight: 6, color: "#2E7D68" }} />
                 {completedLessons.length} of {totalL} lessons completed ({pct}%)
               </p>
               <button className="primary" onClick={() => { openLesson(activeCourse.lessons[0]); goTo("Create course"); }}>
@@ -718,13 +745,13 @@ function App() {
 
             {/* If there are additional saved courses, show them as quick cards */}
             {allCourses.length > 1 && (
-              <div style={{ marginTop: 24, paddingTop: 18, borderTop: "1px solid #e2e8f0" }}>
+              <div style={{ marginTop: 24, paddingTop: 18, borderTop: "1px solid #E9C9B2" }}>
                 <p className="eyebrow" style={{ marginBottom: 12 }}>OTHER SAVED COURSES ({allCourses.length})</p>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
                   {allCourses.map(c => (
-                    <article key={c.id || c.title} style={{ padding: 14, background: "#f8fafc", borderRadius: 12, border: "1px solid #e2e8f0" }}>
-                      <b style={{ fontSize: 13, display: "block", color: "#0f172a", marginBottom: 4 }}>{c.title}</b>
-                      <small style={{ color: "#64748b" }}>{c.lessons.length} lessons • {c.level}</small>
+                    <article key={c.id || c.title} style={{ padding: 14, background: "#FFFFFF", borderRadius: 12, border: "1px solid #E9C9B2" }}>
+                      <b style={{ fontSize: 13, display: "block", color: "#1F1F1F", marginBottom: 4 }}>{c.title}</b>
+                      <small style={{ color: "#6B7280" }}>{c.lessons.length} lessons • {c.level}</small>
                       <button className="text-button" style={{ marginTop: 8, fontSize: 12 }} onClick={() => { setSavedCourse(c); openLesson(c.lessons[0]); goTo("Create course"); }}>
                         Open Course <ChevronRight size={14} />
                       </button>
